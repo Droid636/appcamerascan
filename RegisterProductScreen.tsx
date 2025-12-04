@@ -12,8 +12,7 @@ import {
   Platform,
 } from 'react-native';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
-
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 import { CameraView, Camera, BarcodeScanningResult } from 'expo-camera';
 import { addDoc, collection, getFirestore } from 'firebase/firestore';
@@ -114,7 +113,6 @@ export default function RegisterProductScreen() {
       setPrecioCompra('');
       setFechaCompra(null);
       setFechaCaducidad(null);
-
       setCodigo('');
       setStock('');
     } catch (e: any) {
@@ -122,9 +120,14 @@ export default function RegisterProductScreen() {
     }
   };
 
+  // Convertir fecha a texto YYYY-MM-DD para mostrar
+  const formatDate = (date: Date | null) => {
+    if (!date) return '';
+    return date.toISOString().split('T')[0];
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-
       <View style={styles.card}>
         <Text style={styles.title}>Registrar Producto</Text>
 
@@ -143,15 +146,58 @@ export default function RegisterProductScreen() {
             <Text style={styles.scanButtonText}>Escanear</Text>
           </TouchableOpacity>
         </View>
-        {/* --------------------------------------------------- */}
 
         <TextInput placeholder="Nombre del producto" value={nombre} onChangeText={setNombre} style={styles.input} />
         <TextInput placeholder="Marca" value={marca} onChangeText={setMarca} style={styles.input} />
         <TextInput placeholder="Proveedor" value={proveedor} onChangeText={setProveedor} style={styles.input} />
         <TextInput placeholder="Precio de venta" value={precioVenta} onChangeText={setPrecioVenta} style={styles.input} keyboardType="numeric" />
         <TextInput placeholder="Precio de compra" value={precioCompra} onChangeText={setPrecioCompra} style={styles.input} keyboardType="numeric" />
-        <TextInput placeholder="Fecha de compra (YYYY-MM-DD)" value={fechaCompra} onChangeText={setFechaCompra} style={styles.input} />
-        <TextInput placeholder="Fecha de caducidad (YYYY-MM-DD)" value={fechaCaducidad} onChangeText={setFechaCaducidad} style={styles.input} />
+
+        {/* ====== CALENDARIO FECHA COMPRA ====== */}
+        <TouchableOpacity onPress={() => setPickerCompraVisible(true)}>
+          <TextInput
+            placeholder="Fecha de compra"
+            value={formatDate(fechaCompra)}
+            editable={false}
+            style={styles.input}
+          />
+        </TouchableOpacity>
+
+        {pickerCompraVisible && (
+          <DateTimePicker
+            value={fechaCompra || new Date()}
+            mode="date"
+            display="calendar"
+            onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+              setPickerCompraVisible(false);
+              if (selectedDate) setFechaCompra(selectedDate);
+            }}
+          />
+        )}
+
+        {/* ====== CALENDARIO FECHA CADUCIDAD ====== */}
+        <TouchableOpacity onPress={() => setPickerCaducidadVisible(true)}>
+          <TextInput
+            placeholder="Fecha de caducidad"
+            value={formatDate(fechaCaducidad)}
+            editable={false}
+            style={styles.input}
+          />
+        </TouchableOpacity>
+
+        {pickerCaducidadVisible && (
+          <DateTimePicker
+            value={fechaCaducidad || new Date()}
+            mode="date"
+            display="calendar"
+            minimumDate={fechaCompra || undefined} // evita elegir antes de la compra
+            onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+              setPickerCaducidadVisible(false);
+              if (selectedDate) setFechaCaducidad(selectedDate);
+            }}
+          />
+        )}
+
         <TextInput placeholder="Stock" value={stock} onChangeText={setStock} style={styles.input} keyboardType="numeric" />
 
         <TouchableOpacity style={styles.saveButton} onPress={handleGuardar}>
@@ -168,7 +214,6 @@ export default function RegisterProductScreen() {
             <Text style={{ color: 'red' }}>Sin acceso a la cámara</Text>
           ) : (
             <CameraView
-
               style={styles.camera}
               facing="back"
               onBarcodeScanned={scanned ? undefined : (result: BarcodeScanningResult) => {
@@ -185,7 +230,6 @@ export default function RegisterProductScreen() {
               }}
             />
           )}
-
 
           <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
             <Text style={{ color: '#fff', fontSize: 18 }}>Cerrar</Text>
