@@ -65,14 +65,30 @@ export default function RegisterProductScreen() {
       return;
     }
 
-    // Validar precios
-    if (isNaN(Number(precioVenta)) || Number(precioVenta) <= 0) {
-      Alert.alert('Error', 'Precio de venta inválido');
+    // Validar que nombre y marca solo tengan letras y espacios
+    const soloTexto = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    if (!soloTexto.test(nombre)) {
+      Alert.alert('Error', 'El nombre solo debe contener letras y espacios');
+      return;
+    }
+    if (!soloTexto.test(marca)) {
+      Alert.alert('Error', 'La marca solo debe contener letras y espacios');
       return;
     }
 
-    if (isNaN(Number(precioCompra)) || Number(precioCompra) <= 0) {
+    // Validar precios
+    const venta = Number(precioVenta);
+    const compra = Number(precioCompra);
+    if (isNaN(venta) || venta <= 0) {
+      Alert.alert('Error', 'Precio de venta inválido');
+      return;
+    }
+    if (isNaN(compra) || compra <= 0) {
       Alert.alert('Error', 'Precio de compra inválido');
+      return;
+    }
+    if (venta <= compra) {
+      Alert.alert('Error', 'El precio de venta debe ser mayor al precio de compra');
       return;
     }
 
