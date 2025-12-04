@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert, Modal, TouchableOpacity } from 'react-native';
-import { CameraView, Camera, CameraType, BarcodeScanningResult } from 'expo-camera';
+import { CameraView, Camera, BarcodeScanningResult } from 'expo-camera';
 import { addDoc, collection, getFirestore } from 'firebase/firestore';
 import app from './firebaseConfig';
 const db = getFirestore(app);
@@ -46,42 +46,67 @@ export default function RegisterProductScreen() {
         stock: parseInt(stock, 10),
       });
       Alert.alert('Éxito', 'Producto registrado');
-      setNombre(''); setMarca(''); setProveedor(''); setPrecioVenta(''); setPrecioCompra(''); setFechaCompra(''); setFechaCaducidad(''); setCodigo(''); setStock('');
+      setNombre('');
+      setMarca('');
+      setProveedor('');
+      setPrecioVenta('');
+      setPrecioCompra('');
+      setFechaCompra('');
+      setFechaCaducidad('');
+      setCodigo('');
+      setStock('');
     } catch (e: any) {
-      console.log('Error al guardar producto:', e);
       Alert.alert('Error', e?.message || 'No se pudo registrar el producto');
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Registrar Producto</Text>
-      <TextInput placeholder="Nombre del producto" value={nombre} onChangeText={setNombre} style={styles.input} />
-      <TextInput placeholder="Marca" value={marca} onChangeText={setMarca} style={styles.input} />
-      <TextInput placeholder="Proveedor" value={proveedor} onChangeText={setProveedor} style={styles.input} />
-      <TextInput placeholder="Precio de venta" value={precioVenta} onChangeText={setPrecioVenta} style={styles.input} keyboardType="numeric" />
-      <TextInput placeholder="Precio de compra" value={precioCompra} onChangeText={setPrecioCompra} style={styles.input} keyboardType="numeric" />
-      <TextInput placeholder="Fecha de compra (YYYY-MM-DD)" value={fechaCompra} onChangeText={setFechaCompra} style={styles.input} />
-      <TextInput placeholder="Fecha de caducidad (YYYY-MM-DD)" value={fechaCaducidad} onChangeText={setFechaCaducidad} style={styles.input} />
-      <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center' }}>
-        <TextInput placeholder="Código (escaneado o manual)" value={codigo} onChangeText={setCodigo} style={[styles.input, { flex: 1, marginRight: 5 }]} />
-        <TouchableOpacity onPress={() => { setModalVisible(true); setScanned(false); }} style={styles.scanButton}>
-          <Text style={{ color: '#fff' }}>Escanear</Text>
+      <View style={styles.card}>
+        <Text style={styles.title}>Registrar Producto</Text>
+
+        {/* ------------------ BOTÓN ARRIBA ------------------ */}
+        <View style={styles.row}>
+          <TextInput
+            placeholder="Código (escaneado o manual)"
+            value={codigo}
+            onChangeText={setCodigo}
+            style={[styles.input, { flex: 1 }]}
+          />
+
+          <TouchableOpacity
+            onPress={() => { setModalVisible(true); setScanned(false); }}
+            style={styles.scanButton}>
+            <Text style={styles.scanButtonText}>Escanear</Text>
+          </TouchableOpacity>
+        </View>
+        {/* --------------------------------------------------- */}
+
+        <TextInput placeholder="Nombre del producto" value={nombre} onChangeText={setNombre} style={styles.input} />
+        <TextInput placeholder="Marca" value={marca} onChangeText={setMarca} style={styles.input} />
+        <TextInput placeholder="Proveedor" value={proveedor} onChangeText={setProveedor} style={styles.input} />
+        <TextInput placeholder="Precio de venta" value={precioVenta} onChangeText={setPrecioVenta} style={styles.input} keyboardType="numeric" />
+        <TextInput placeholder="Precio de compra" value={precioCompra} onChangeText={setPrecioCompra} style={styles.input} keyboardType="numeric" />
+        <TextInput placeholder="Fecha de compra (YYYY-MM-DD)" value={fechaCompra} onChangeText={setFechaCompra} style={styles.input} />
+        <TextInput placeholder="Fecha de caducidad (YYYY-MM-DD)" value={fechaCaducidad} onChangeText={setFechaCaducidad} style={styles.input} />
+        <TextInput placeholder="Stock" value={stock} onChangeText={setStock} style={styles.input} keyboardType="numeric" />
+
+        <TouchableOpacity style={styles.saveButton} onPress={handleGuardar}>
+          <Text style={styles.saveButtonText}>Guardar</Text>
         </TouchableOpacity>
       </View>
-      <TextInput placeholder="Stock" value={stock} onChangeText={setStock} style={styles.input} keyboardType="numeric" />
-      <Button title="Guardar" onPress={handleGuardar} />
 
+      {/* MODAL DEL ESCANEO */}
       <Modal visible={modalVisible} animationType="slide">
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+        <View style={styles.modalContainer}>
           {hasPermission === null ? (
-            <Text style={{ color: '#fff' }}>Solicitando permiso de cámara...</Text>
+            <Text style={{ color: '#fff' }}>Solicitando permiso...</Text>
           ) : hasPermission === false ? (
             <Text style={{ color: 'red' }}>Sin acceso a la cámara</Text>
           ) : (
             <CameraView
-              style={{ width: '100%', height: '70%' }}
-              facing={"back"}
+              style={styles.camera}
+              facing="back"
               onBarcodeScanned={scanned ? undefined : (result: BarcodeScanningResult) => {
                 setCodigo(result.data);
                 setScanned(true);
@@ -89,11 +114,14 @@ export default function RegisterProductScreen() {
               }}
               barcodeScannerSettings={{
                 barcodeTypes: [
-                  'ean13', 'ean8', 'upc_a', 'upc_e', 'code39', 'code128', 'qr', 'pdf417', 'aztec', 'datamatrix'
+                  'ean13', 'ean8', 'upc_a', 'upc_e',
+                  'code39', 'code128', 'qr',
+                  'pdf417', 'aztec', 'datamatrix'
                 ],
               }}
             />
           )}
+
           <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
             <Text style={{ color: '#fff', fontSize: 18 }}>Cerrar</Text>
           </TouchableOpacity>
@@ -107,33 +135,92 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f2f5',
     alignItems: 'center',
-    justifyContent: 'center',
   },
+
+  card: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 5,
+    marginTop: 20,
+  },
+
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
+    color: '#333',
+    alignSelf: 'center',
     marginBottom: 20,
   },
+
   input: {
     width: '100%',
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
+    borderColor: '#d8d8d8',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+    backgroundColor: '#fafafa',
+    fontSize: 16,
   },
+
+  row: {
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+
   scanButton: {
     backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    marginLeft: 10,
   },
+
+  scanButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+
+  saveButton: {
+    backgroundColor: '#28a745',
+    paddingVertical: 14,
+    borderRadius: 10,
+    marginTop: 15,
+    alignItems: 'center',
+  },
+
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+  },
+
+  camera: {
+    width: '100%',
+    height: '75%',
+  },
+
   closeButton: {
     backgroundColor: '#d32f2f',
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 20,
+    padding: 14,
+    borderRadius: 12,
+    margin: 20,
     alignItems: 'center',
   },
 });
