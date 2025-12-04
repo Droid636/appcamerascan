@@ -47,8 +47,9 @@ export default function RegisterProductScreen() {
       });
       Alert.alert('Éxito', 'Producto registrado');
       setNombre(''); setMarca(''); setProveedor(''); setPrecioVenta(''); setPrecioCompra(''); setFechaCompra(''); setFechaCaducidad(''); setCodigo(''); setStock('');
-    } catch (e) {
-      Alert.alert('Error', 'No se pudo registrar el producto');
+    } catch (e: any) {
+      console.log('Error al guardar producto:', e);
+      Alert.alert('Error', e?.message || 'No se pudo registrar el producto');
     }
   };
 
