@@ -25,4 +25,3 @@ export default function App() {
   );
 }
 
-// ...existing code...
