@@ -69,11 +69,12 @@ export default function SearchProductScreen() {
       </Modal>
       {product && (
         <View style={styles.productBox}>
-          <Text>Nombre: {product.nombre}</Text>
-          <Text>Marca: {product.marca}</Text>
-          <Text>Proveedor: {product.proveedor}</Text>
-          <Text>Precio venta: {product.precioVenta}</Text>
-          <Text>Stock: {product.stock}</Text>
+          <Text style={styles.productTitle}>Detalles del producto</Text>
+          <View style={styles.productDetailRow}><Text style={styles.productLabel}>Nombre:</Text><Text style={styles.productValue}>{product.nombre}</Text></View>
+          <View style={styles.productDetailRow}><Text style={styles.productLabel}>Marca:</Text><Text style={styles.productValue}>{product.marca}</Text></View>
+          <View style={styles.productDetailRow}><Text style={styles.productLabel}>Proveedor:</Text><Text style={styles.productValue}>{product.proveedor}</Text></View>
+          <View style={styles.productDetailRow}><Text style={styles.productLabel}>Precio venta:</Text><Text style={styles.productValue}>${product.precioVenta}</Text></View>
+          <View style={styles.productDetailRow}><Text style={styles.productLabel}>Stock:</Text><Text style={styles.productValue}>{product.stock}</Text></View>
         </View>
       )}
     </View>
@@ -102,11 +103,48 @@ const styles = StyleSheet.create({
   },
   productBox: {
     marginTop: 30,
-    padding: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
+    padding: 24,
+    borderRadius: 16,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    alignItems: 'center',
+    width: '90%',
+    alignSelf: 'center',
+  },
+  productTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 18,
+    color: '#007bff',
+  },
+  productDetailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     width: '100%',
-    backgroundColor: '#f9f9f9',
+    marginBottom: 10,
+  },
+  productLabel: {
+    fontWeight: 'bold',
+    color: '#333',
+    fontSize: 16,
+    flex: 1,
+  },
+  productValue: {
+    color: '#555',
+    fontSize: 16,
+    flex: 1,
+    textAlign: 'right',
+  },
+  productCloseButton: {
+    marginTop: 18,
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    alignItems: 'center',
   },
 });
