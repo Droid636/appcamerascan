@@ -149,9 +149,9 @@ export default function RegisterProductScreen() {
 
         <TextInput placeholder="Nombre del producto" value={nombre} onChangeText={setNombre} style={styles.input} />
         <TextInput placeholder="Marca" value={marca} onChangeText={setMarca} style={styles.input} />
-        <TextInput placeholder="Proveedor" value={proveedor} onChangeText={setProveedor} style={styles.input} />
-        <TextInput placeholder="Precio de venta" value={precioVenta} onChangeText={setPrecioVenta} style={styles.input} keyboardType="numeric" />
+        <TextInput placeholder="Proveedor" value={proveedor} onChangeText={setProveedor} style={styles.input} />            
         <TextInput placeholder="Precio de compra" value={precioCompra} onChangeText={setPrecioCompra} style={styles.input} keyboardType="numeric" />
+        <TextInput placeholder="Precio de venta" value={precioVenta} onChangeText={setPrecioVenta} style={styles.input} keyboardType="numeric" />
 
         {/* ====== CALENDARIO FECHA COMPRA ====== */}
         <TouchableOpacity onPress={() => setPickerCompraVisible(true)}>
